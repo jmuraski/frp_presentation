@@ -1,0 +1,36 @@
+Title
+
+Who we are
+
+Why we are qualified to talk about this
+
+What is Functional Reactive Programming - High Level
+
+What is it trying to fix
+
+CPS - Continuation Passing Style
+Call Back Hell
+
+Current Event Programming
+	Issues
+
+Types Of FRP
+
+Futures - Promises
+
+Actors (Akka)
+
+Observables (JavaRx, Reactive Extensions)
+
+More Details on Observables (talk about frameworks show examples)
+
+In the wild - show libraries, companies that are doing it
+
+Coding demo
+	Show example of CPS 
+	Show example of Promises - with Q
+	Show example of FRP with Bacon
+
+Examples will show type ahead search
+
+Looking into web sockets 
