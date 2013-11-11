@@ -4,7 +4,7 @@
 	<head>
 		<meta charset="utf-8">
 
-		<title>Intro to Functional Reactive Programming</title>
+		<title>Functional Reactive Programming</title>
 
 		<meta name="description" content="An introduction to functional reactive programming.">
 		<meta name="author" content="Ted Naleid">
@@ -16,7 +16,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 		<link rel="stylesheet" href="css/reveal.min.css">
-		<link rel="stylesheet" href="css/theme/night.css" id="theme">
+		<link rel="stylesheet" href="css/theme/custom.css" id="theme">
 
 		<!-- For syntax highlighting -->
 		<link rel="stylesheet" href="lib/css/zenburn.css">
@@ -40,17 +40,50 @@
 
 
 <section data-markdown><script type="text/template">
-## Functional Reactive Programming
+# Functional Reactive Programming
+
+by Ted Naleid <span class="amp">&amp;</span> Joe Muraski
 
 </script></section>
 
 <section data-markdown><script type="text/template">
-## Slide #2 
+# Header h1
+## Header h2
+### Header h3
+#### Header h4
+##### Header h5
 
 </script></section>
 
 <section data-markdown><script type="text/template">
-## Slide #3 
+# Header h1 
+
+Regular paragraph text with `code` embedded
+
+- avoid bullet points
+- most of the time they [make bad slides](http://shop.oreilly.com/product/9780735627352.do)
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+## Big Code Block 
+#### probably should not get much bigger than this 
+
+```scala
+def getVideos(userId: Long): Observable[Map[String, Any]] = 
+  videoService.getVideos(userId)
+    .take(10)  // take the first 10, then auto-unsubscribe
+    .flatMap(video => {
+      val metadata = video.getMetaData(video) // async Map
+      val bookmark = videoService.getBookmark(video, userId) // async Map
+      val rating = videoService.getRating(video, userId) // async Map
+      Observable.zip(Observable(List(metadata, bookmark, rating): _*)).map {
+        case m :: b :: r :: Nil => Map("id" -> video.id) ++ m ++ b ++ r
+      }
+  })
+    
+  //=> Map(id->1, rating->*****, position->1:33, length->2h, title->Gravity)
+```
 
 </script></section>
 

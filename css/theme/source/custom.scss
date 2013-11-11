@@ -1,0 +1,92 @@
+// Custom theme for FRP presentation
+
+// Default mixins and settings -----------------
+@import "../template/mixins";
+@import "../template/settings";
+// ---------------------------------------------
+
+
+// Include theme-specific fonts
+@import url(http://fonts.googleapis.com/css?family=IM+Fell+Great+Primer|Alegreya|Open+Sans);
+
+// Override theme settings (see ../template/settings.scss)
+
+$mainFont: 'Open Sans', sans-serif;
+
+$mainColor: #333;
+$headingColor: #333;
+$headingTextShadow: none;
+
+$codeColor: #ccc;
+
+$linkColor: #333;
+$linkColorHover: lighten( #60f928, 10% );
+$headingFont: 'IM Fell Great Primer', Impact, sans-serif;
+$headingMargin: 0 0 70px;
+$headingPadding: 0;
+$headingLetterSpacing: -0.03em;
+$headingTextTransform: none;
+$selectionBackgroundColor: #eee;
+$mainFontSize: 30px;
+
+// Background generator
+@mixin bodyBackground() {
+    //@include radial-gradient(#0e4403, #60f928);  // green
+    //@include radial-gradient(#54053e, #f336e0);  // purple
+    @include radial-gradient(#393939, #f9f9f9);  // black and white
+}
+
+
+.reveal a:not(.image) {
+    background-color: rgba(50, 50, 50, 0.25);
+    padding: 0 5px;
+}
+
+.reveal h2 { 
+    font-size: 3.11em; 
+    text-shadow: $heading1TextShadow !important;
+}
+.reveal h3 { 
+    font-size: 2.7em; 
+    text-shadow: $heading1TextShadow !important;
+}
+.reveal h4 { 
+    font-size: 2.2em; 
+    text-shadow: $heading1TextShadow !important;
+}
+.reveal h5 { 
+    font-size: 1.9em; 
+    text-shadow: $heading1TextShadow !important;
+}
+
+.reveal code {
+    font-family: Menlo, monospace;
+    padding: 2px 10px;
+    color: $codeColor;
+    border: solid 1px $codeColor;
+    background-color: #333;
+}
+
+.reveal pre {
+    margin-left: -2%;
+    width: 105%;
+}
+
+.reveal pre code {
+    padding: 5px;
+    overflow: auto;
+    max-height: 500px;
+    word-wrap: normal;
+    font-size: 1.35em;
+    line-height: 1.4em;
+}
+
+span.amp {
+   font-family:Goudy Old Style, serif;
+   font-size:115%;
+   font-style:italic;
+}
+
+// Theme template ------------------------------
+@import "../template/theme";
+// ---------------------------------------------
