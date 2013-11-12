@@ -52,22 +52,23 @@ by Ted Naleid <span class="amp">&amp;</span> Joe Muraski
 ### Header h3
 #### Header h4
 ##### Header h5
-
+test slide
 </script></section>
 
 <section data-markdown><script type="text/template">
-# Header h1 
+# Test Slide 
 
 Regular paragraph text with `code` embedded
 
 - avoid bullet points
-- most of the time they [make bad slides](http://shop.oreilly.com/product/9780735627352.do)
+- most of the time they make bad slides
+- [example link](http://google.com)
 
 </script></section>
 
 <section data-markdown><script type="text/template">
 ## Big Code Block 
-#### probably should not get much bigger than this 
+#### test slide 
 
 ```scala
 def getVideos(userId: Long): Observable[Map[String, Any]] = 
@@ -87,8 +88,192 @@ def getVideos(userId: Long): Observable[Map[String, Any]] =
 
 </script></section>
 
-			</div>
+<section data-markdown> <script type="text/template">
 
+# In the beginning
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+## Getting single values (synchronous, blocking) 
+  
+    getWidget: Widget
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+# Then came Iterator pattern (as documented by the Gang of Four)
+## Get multiple values (synchronous, blocking)
+
+    getWidgets: List[Widgets]
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+## Gave us composable, expressable ways to work with our data 
+
+talk about letting you do things functionally with them
+
+map, reduce, zip, take, drop etc
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+## but we have to block until the whole list shows up
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+## Callbacks/CPS let us work asynchronously
+
+show easy then painful examples
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+## Futures/Promises help tame callback hell
+
+(for single values)
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+## get single value (async)
+
+    getWidget: Future[Widget]
+
+</script> </section>
+
+
+<section data-markdown> <script type="text/template">
+# What if you need a list of items asynchronously? 
+
+One way is to request the full list in an asynchronous way:
+
+    getWidgets: Future[Widget]
+
+Server calculates list asynchronously and does a callback when it has the full list
+
+Problems: 
+- need to wait for full list to come back (slow user experience)
+- what if it's infinite (need to paginate, etc)
+- what if it's a stream that updates? we need to poll for updates
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+# Observer pattern (as documented by the Gang of Four)
+
+lets you register a callback 
+
+but then it is up to you to aggregate those into mutable lists and let consumers know that the list has been updated
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+# what if this happened? 
+
+You got your Iterator in my Observable! You got your Observable in my Iterator!
+
+Photoshopped Reeses Peanut Butter Cups image
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+# their love child would be the Observable
+
+    getWidgets: Observable[Widget]
+
+Allows you to asynchronously get 
+
+They are also composable, as we will see
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+## Marble diagrams explanation using something like drop
+
+</script> </section>
+
+
+<section data-markdown> <script type="text/template">
+
+## Merge
+
+</script> </section>
+
+
+<section data-markdown> <script type="text/template">
+
+## Zip
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+## Other functions
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+## Composition of functions
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+# How does this solve problems in the real world?
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+## Netflix example
+
+netflix does this with their video API:
+
+```scala
+def getVideos(userId: Long): Observable[Map[String, Any]] = 
+  videoService.getVideos(userId)
+    .take(10)  // take the first 10, then auto-unsubscribe
+    .flatMap(video => {
+      val metadata = video.getMetaData(video) // async Map
+      val bookmark = videoService.getBookmark(video, userId) // async Map
+      val rating = videoService.getRating(video, userId) // async Map
+      Observable.zip(Observable(List(metadata, bookmark, rating): _*)).map {
+        case m :: b :: r :: Nil => Map("id" -> video.id) ++ m ++ b ++ r
+      }
+  })
+//=> Map(id -> 1, rating -> *****, pos -> 1:33, length -> 2h, title -> Gravity)
+```
+
+That method composes 4 separate asynch calls into a List of 10 Maps
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+## Other examples
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+# Demo (shows merge, zip etc)
+
+</script> </section>
+
+			</div>
 		</div>
 
 		<script src="lib/js/head.min.js"></script>
@@ -121,6 +306,5 @@ def getVideos(userId: Long): Observable[Map[String, Any]] =
 			});
 
 		</script>
-
 	</body>
 </html>
