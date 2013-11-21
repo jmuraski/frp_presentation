@@ -12,3 +12,13 @@ Then you should be able to run `grunt serve` and have it start the presentation 
 
 When developing, using something like [LiveReload](http://livereload.com/) and it's Chrome browser plugin makes development even quicker.
 
+
+To run the demo, you'll want to have rvm, bower and grunt installed.
+
+Then, you should be able to:
+
+    npm install
+    bower install
+    grunt
+    grunt serve
+
