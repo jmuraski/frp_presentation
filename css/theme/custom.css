@@ -30,6 +30,11 @@
   margin-left: -2%;
   width: 105%; }
 
+.reveal section img {
+  display: block;
+  margin-left: auto !important;
+  margin-right: auto !important; }
+
 .reveal pre code {
   padding: 5px;
   overflow: auto;
