@@ -36,7 +36,6 @@ $mainFontSize: 30px;
     @include radial-gradient(#393939, #f9f9f9);  // black and white
 }
 
-
 .reveal a:not(.image) {
     background-color: rgba(50, 50, 50, 0.25);
     padding: 0 5px;
@@ -70,6 +69,12 @@ $mainFontSize: 30px;
 .reveal pre {
     margin-left: -2%;
     width: 105%;
+}
+
+.reveal section img {
+    display: block;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
 .reveal pre code {

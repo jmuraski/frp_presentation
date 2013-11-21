@@ -46,47 +46,41 @@ by Ted Naleid <span class="amp">&amp;</span> Joe Muraski
 
 </script></section>
 
-<section data-markdown><script type="text/template">
-# Header h1
-## Header h2
-### Header h3
-#### Header h4
-##### Header h5
-test slide
-</script></section>
+<section data-markdown> <script type="text/template">
 
-<section data-markdown><script type="text/template">
-# Test Slide 
+## What is reactive programming?
 
-Regular paragraph text with `code` embedded
+</script> </section>
 
-- avoid bullet points
-- most of the time they make bad slides
-- [example link](http://google.com)
 
-</script></section>
+<section data-markdown> <script type="text/template">
 
-<section data-markdown><script type="text/template">
-## Big Code Block 
-#### test slide 
+## Well…there&apos;s a manifesto you can sign 
 
-```scala
-def getVideos(userId: Long): Observable[Map[String, Any]] = 
-  videoService.getVideos(userId)
-    .take(10)  // take the first 10, then auto-unsubscribe
-    .flatMap(video => {
-      val metadata = video.getMetaData(video) // async Map
-      val bookmark = videoService.getBookmark(video, userId) // async Map
-      val rating = videoService.getRating(video, userId) // async Map
-      Observable.zip(Observable(List(metadata, bookmark, rating): _*)).map {
-        case m :: b :: r :: Nil => Map("id" -> video.id) ++ m ++ b ++ r
-      }
-  })
-    
-  //=> Map(id->1, rating->*****, position->1:33, length->2h, title->Gravity)
-```
+<img src="/img/manifesto_small.png" width="700px"/>
 
-</script></section>
+</script> </section>
+
+
+<section data-markdown> <script type="text/template">
+
+## Ask 100 people what &lsquo;reactive programming&rsquo; is… 
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+## and you&apos;ll get a lot of buzzwords and handwaving 
+ 
+</script> </section>
+
+
+<section data-markdown> <script type="text/template">
+
+## So what is _functional_ reactive programming?
+
+</script> </section>
+
 
 <section data-markdown> <script type="text/template">
 
@@ -96,34 +90,47 @@ def getVideos(userId: Long): Observable[Map[String, Any]] =
 
 <section data-markdown> <script type="text/template">
 
-## Getting single values (synchronous, blocking) 
+## Getting a single value (synchronous, blocking) 
   
-    getWidget: Widget
+    getUser: User
 
 </script> </section>
 
 <section data-markdown> <script type="text/template">
 
-# Then came Iterator pattern (as documented by the Gang of Four)
+## Easy to use and reason about, but it doesn&apos;t scale 
+  
+</script> </section>
+
+
+<section data-markdown> <script type="text/template">
+
 ## Get multiple values (synchronous, blocking)
 
-    getWidgets: List[Widgets]
+    getUsers: List[User]
+
+</script> </section>
+
+
+<section data-markdown> <script type="text/template">
+
+## Now we get Iterators  
+(as documented by the Gang of Four)
+
+</script> </section>
+
+
+<section data-markdown> <script type="text/template">
+
+## Composable data manipulation
+
+    val adults = users.filter(_.age > 17).sortBy(p => (p.lName, p.fName)).take(10)
 
 </script> </section>
 
 <section data-markdown> <script type="text/template">
 
-## Gave us composable, expressable ways to work with our data 
-
-talk about letting you do things functionally with them
-
-map, reduce, zip, take, drop etc
-
-</script> </section>
-
-<section data-markdown> <script type="text/template">
-
-## but we have to block until the whole list shows up
+## but we block until the full list is ready
 
 </script> </section>
 
@@ -132,6 +139,7 @@ map, reduce, zip, take, drop etc
 ## Callbacks/CPS let us work asynchronously
 
 CPS - Continuation Passing Style
+
 Call Back Hell
 
 show easy then painful examples
