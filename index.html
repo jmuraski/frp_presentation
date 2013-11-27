@@ -82,6 +82,63 @@ by Ted Naleid <span class="amp">&amp;</span> Joe Muraski
 </script> </section>
 
 
+
+<section data-markdown> <script type="text/template">
+
+5 ways to get data (later 6!)
+
+getUser - synchronous, blocking, pull
+getUsers - synchronous, blocking, pull
+getUser w/callback - asynchronous, non-blocking, pull
+getUsers w/callback - asynchronous, non-blocking, pull
+onNewUser observer - asynchronous, non-blocking, push
+…
+really no composable way to get things pushed to you
+
+til now!
+
+
+
+
+</script> </section>
+
+<section data-markdown>
+<script type="text/template">
+
+Observer pattern
+
+    var path: Path = null
+    val moveObserver = { (event: MouseEvent) =>
+        path.lineTo(event.position) draw(path)
+    }
+    control.addMouseDownObserver { event =>
+        path = new Path(event.position)
+        control.addMouseMoveObserver(moveObserver) 
+    }
+    control.addMouseUpObserver { event => control.removeMouseMoveObserver(moveObserver) path.close()
+        draw(path)
+    }
+
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+
+lots of problems with this
+
+observers promote side effects 
+
+need multiple observers to make a state machine
+
+state needs to be saved in a place available to all
+
+
+</script>
+</section>
+
+
+
 <section data-markdown> <script type="text/template">
 
 # In the beginning
