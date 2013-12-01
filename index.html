@@ -81,64 +81,6 @@ by Ted Naleid <span class="amp">&amp;</span> Joe Muraski
 
 </script> </section>
 
-
-
-<section data-markdown> <script type="text/template">
-
-5 ways to get data (later 6!)
-
-getUser - synchronous, blocking, pull
-getUsers - synchronous, blocking, pull
-getUser w/callback - asynchronous, non-blocking, pull
-getUsers w/callback - asynchronous, non-blocking, pull
-onNewUser observer - asynchronous, non-blocking, push
-…
-really no composable way to get things pushed to you
-
-til now!
-
-
-
-
-</script> </section>
-
-<section data-markdown>
-<script type="text/template">
-
-Observer pattern
-
-    var path: Path = null
-    val moveObserver = { (event: MouseEvent) =>
-        path.lineTo(event.position) draw(path)
-    }
-    control.addMouseDownObserver { event =>
-        path = new Path(event.position)
-        control.addMouseMoveObserver(moveObserver) 
-    }
-    control.addMouseUpObserver { event => control.removeMouseMoveObserver(moveObserver) path.close()
-        draw(path)
-    }
-
-</script>
-</section>
-
-<section data-markdown>
-<script type="text/template">
-
-lots of problems with this
-
-observers promote side effects 
-
-need multiple observers to make a state machine
-
-state needs to be saved in a place available to all
-
-
-</script>
-</section>
-
-
-
 <section data-markdown> <script type="text/template">
 
 # In the beginning
@@ -147,31 +89,38 @@ state needs to be saved in a place available to all
 
 <section data-markdown> <script type="text/template">
 
-## Getting a single value (synchronous, blocking) 
+## We had single values
   
     getUser: User
 
+###### Synchronous/Blocking/Pull
+
 </script> </section>
 
 <section data-markdown> <script type="text/template">
 
-## Easy to use and reason about, but it doesn&apos;t scale 
+### Easy to use, but doesn&apos;t scale to multiple values
   
 </script> </section>
 
 
 <section data-markdown> <script type="text/template">
 
-## Get multiple values (synchronous, blocking)
+### Next we got many values in one call 
 
     getUsers: List[User]
 
-</script> </section>
+###### Synchronous/Blocking/Pull
 
+</script> </section>
 
 <section data-markdown> <script type="text/template">
 
-## Now we get Iterators  
+### To work with many values we use Iterators  
+
+    hasNext: Boolean
+    next: User
+
 (as documented by the Gang of Four)
 
 </script> </section>
@@ -179,7 +128,7 @@ state needs to be saved in a place available to all
 
 <section data-markdown> <script type="text/template">
 
-## Composable data manipulation
+### Iterators lead to composable data manipulation
 
     val adults = users.filter(_.age > 17).sortBy(p => (p.lName, p.fName)).take(10)
 
@@ -190,6 +139,61 @@ state needs to be saved in a place available to all
 ## but we block until the full list is ready
 
 </script> </section>
+
+<section data-markdown>
+<script type="text/template">
+
+### Normal Execution
+```markdown
++-----------------------------------------------------------------------------+
+| execute typical instruction                   1 nanosec (1 billionth/second)|
+| fetch from L1 cache memory                  0.5 nanosec                     |
+| branch misprediction                          5 nanosec                     |
+| fetch from L2 cache memory                    7 nanosec                     |
+| Mutex lock/unlock                            25 nanosec                     |
+| fetch from main memory                      100 nanosec                     |
++-----------------------------------------------------------------------------+
+| send 2K bytes over 1Gbps network         20,000 nanosec                     |
+| read 1MB sequentially from memory       250,000 nanosec                     | 
+| fetch from new disk location (seek)   8,000,000 nanosec                     |
+| read 1MB sequentially from disk      20,000,000 nanosec                     |
+| send packet US to Europe and back   150,000,000 nanosec (150 milliseconds)  |
++-----------------------------------------------------------------------------+
+```
+<small>source: http://norvig.com/21-days.html#answers</small>
+### Blocking Requests
+
+
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+
+### Normal Execution
+```markdown
++-----------------------------------------------------------------------------+
+| execute typical instruction                   1 seconds                     |
+| fetch from L1 cache memory                  0.5 seconds                     |
+| branch misprediction                          5 seconds                     |
+| fetch from L2 cache memory                    7 seconds                     |
+| Mutex lock/unlock                            30 seconds                     |
+| fetch from main memory                      1.5 minutes                     |
++-----------------------------------------------------------------------------+
+| send 2K bytes over 1Gbps network            5.5 hours                       |
+| read 1MB sequentially from memory             3 days                        | 
+| fetch from new disk location (seek)          13 weeks                       |
+| read 1MB sequentially from disk             6.5 months                      |
+| send packet US to Europe and back             5 years                       |
++-----------------------------------------------------------------------------+
+```
+<small>source: https://class.coursera.org/reactive-001/lecture/51</small>
+### Blocking Requests
+
+
+</script>
+</section>
+
 
 <section data-markdown> <script type="text/template">
 
@@ -245,6 +249,41 @@ but then it is up to you to aggregate those into mutable lists and let consumers
 
 </script> </section>
 
+<section data-markdown>
+<script type="text/template">
+
+Observer pattern
+
+    var path: Path = null
+    val moveObserver = { (event: MouseEvent) =>
+        path.lineTo(event.position) draw(path)
+    }
+    control.addMouseDownObserver { event =>
+        path = new Path(event.position)
+        control.addMouseMoveObserver(moveObserver) 
+    }
+    control.addMouseUpObserver { event => control.removeMouseMoveObserver(moveObserver) path.close()
+        draw(path)
+    }
+
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+
+lots of problems with this
+
+observers promote side effects 
+
+need multiple observers to make a state machine
+
+state needs to be saved in a place available to all
+
+
+</script>
+</section>
+
 <section data-markdown> <script type="text/template">
 
 # what if this happened? 
@@ -266,6 +305,23 @@ Allows you to asynchronously get
 They are also composable, as we will see
 
 </script> </section>
+
+<section data-markdown>
+<script type="text/template">
+
+#### 4 essential Effects in Programming
+
+                                         One           Many       
+                                    +------------+---------------+
+             Synchronous/Blocking   | T/Try[T]   |  Iterable[T]  |
+                                    +------------+---------------+
+         Asynchronous/Non-Blocking  | Future[T]  | Observable[T] |
+                                    +------------+---------------+
+
+per Erik Meijer
+
+</script>
+</section>
 
 <section data-markdown> <script type="text/template">
 
