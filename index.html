@@ -152,8 +152,7 @@ val adults = users.filter(_.age > 17).sortBy(p => (p.lName, p.fName)).take(10)
 
 </script> </section>
 
-<section data-markdown>
-<script type="text/template">
+<section data-markdown> <script type="text/template">
 
 ### Normal Execution
 ```markdown
@@ -175,11 +174,9 @@ val adults = users.filter(_.age > 17).sortBy(p => (p.lName, p.fName)).take(10)
 <small>source: http://norvig.com/21-days.html#answers</small>
 ### Blocking Requests
 
-</script>
-</section>
+</script> </section>
 
-<section data-markdown>
-<script type="text/template">
+<section data-markdown> <script type="text/template">
 
 ### Normal Execution
 ```markdown
@@ -201,8 +198,7 @@ val adults = users.filter(_.age > 17).sortBy(p => (p.lName, p.fName)).take(10)
 <small>source: https://class.coursera.org/reactive-001/lecture/51</small>
 ### Blocking Requests
 
-</script>
-</section>
+</script> </section>
 
 
 <section data-markdown> <script type="text/template">
@@ -211,8 +207,7 @@ val adults = users.filter(_.age > 17).sortBy(p => (p.lName, p.fName)).take(10)
 
 </script> </section>
 
-<section data-markdown>
-<script type="text/template">
+<section data-markdown> <script type="text/template">
 
 ## And lead to Callback Hell
 
@@ -235,8 +230,7 @@ getTweetsWithUrlsFor("tednaleid", function(err, tweets) {
 });
 ```
 
-</script>
-</section>
+</script> </section>
 
 <section data-markdown> <script type="text/template">
 
@@ -279,45 +273,37 @@ getUser: Future[User]
 
 </script> </section>
 
-<section data-markdown>
-<script type="text/template">
+<section data-markdown> <script type="text/template">
 ### One way: Future containing an Iterator
 
 ```scala
 getUsers: Future[List[Users]]
 ```
 
-</script>
-</section>
+</script> </section>
 
-<section data-markdown>
-<script type="text/template">
+<section data-markdown> <script type="text/template">
 
 ### Issue: Need to wait for full list 
 
 ### Result: Slow user experience
 
-</script>
-</section>
+</script> </section>
 
-<section data-markdown>
-<script type="text/template">
+<section data-markdown> <script type="text/template">
 
 ### Issue: What if full list is too big? 
 
 ### Result: Need to paginate
 
-</script>
-</section>
+</script> </section>
 
-<section data-markdown>
-<script type="text/template">
+<section data-markdown> <script type="text/template">
 ### Issue: What if it&apos;s a stream that has updates?
 
 ### Result: We need to poll for updates and merge them in
 
-</script>
-</section>
+</script> </section>
 
 
 <section data-markdown> <script type="text/template">
@@ -325,8 +311,7 @@ getUsers: Future[List[Users]]
 
 </script> </section>
 
-<section data-markdown>
-<script type="text/template">
+<section data-markdown> <script type="text/template">
 
 ## Observer example
 
@@ -347,41 +332,31 @@ control.addMouseUpObserver { event =>
 }
 ```
 
-</script>
-</section>
+</script> </section>
 
-<section data-markdown>
-<script type="text/template">
+<section data-markdown> <script type="text/template">
 
 ### Observers promote side effects
 
-</script>
-</section>
+</script> </section>
 
-<section data-markdown>
-<script type="text/template">
+<section data-markdown> <script type="text/template">
 
 ### Multiple Observers needed to make a state machine
 
-</script>
-</section>
+</script> </section>
 
-<section data-markdown>
-<script type="text/template">
+<section data-markdown> <script type="text/template">
 
 ### State needs to be saved in a place available to all Observers
 
-</script>
-</section>
+</script> </section>
 
-<section data-markdown>
-<script type="text/template">
+<section data-markdown> <script type="text/template">
 
 ## Is there a better way? 
 
-</script>
-</section>
-
+</script> </section>
 
 <section data-markdown> <script type="text/template">
 
@@ -404,40 +379,7 @@ control.addMouseUpObserver { event =>
 
 </script> </section>
 
-<section data-markdown>
-<script type="text/template">
-
-### Observables allow you to asynchronously get
-
-```scala
-getUsers: Observable[User]
-```
-
-They are also composable, as we will see
-
-</script>
-</section>
-
-<section data-markdown>
-<script type="text/template">
-
-##### &lsquo;Four essential effects in programming&rsquo; <small> - Erik Meijer</small>
-
-```markdown
-                                         One           Many       
-                                    +------------+---------------+
-             Synchronous/Blocking   |     T      |  Iterable[T]  |
-                                    +------------+---------------+
-         Asynchronous/Non-Blocking  | Future[T]  | Observable[T] |
-                                    +------------+---------------+
-```
-
-
-</script>
-</section>
-
-<section data-markdown>
-<script type="text/template">
+<section data-markdown> <script type="text/template">
 
 #### Iterator : pull :: Observable : push
 
@@ -453,26 +395,134 @@ They are also composable, as we will see
 ```
 ##### <small>(JavaRx implementation)</small>
 
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+### Observables allow you to asynchronously get
+
+```scala
+getUsers: Observable[User]
+```
+
+They are also composable, as we will see
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+#### How is `getUsers` implemented? 
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+#### Using the same thread?  A different thread?  Multiple threads?  An Actor or a Channel?
+
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+### Implementation details!  
+
+### The caller doesn&apos;t care, it only wants an Observable!
+
+</script> </section>
+
+<section data-markdown>
+<script type="text/template">
+
+## Using Observables 
+
 </script>
 </section>
 
+<section data-markdown>
+<script type="text/template">
+
+## map
+
+<img src="/img/map.png" width="700px"/>
+
+###### <small>from https://github.com/Netflix/RxJava/wiki/Transforming-Observables#map</small>
+
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+## map
+
+```scala
+val numbers = Observable(1, 2, 3, 4, 5)
+
+numbers.map(x => x * 2).subscribe(
+  (x: Int) => println(x),                   // onNext
+  (e: Throwable) => println("Error! " + e), // onError
+  () => println("Done!")                    // onSuccess
+)
+```
+prints
+
+```scala
+2
+4
+6
+8
+10
+Done!
+```
+
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+
+## reduce 
+
+<img src="/img/reduce.png" width="700px"/>
+
+###### <small>from https://github.com/Netflix/RxJava/wiki/Transforming-Observables#reduce-or-aggregate</small>
+
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+## reduce
+
+```scala
+val numbers = Observable(1, 2, 3, 4, 5)
+
+numbers.reduce((a, b) => a + b).subscribe(
+  (x: Int) => println(x),                   // onNext
+  (e: Throwable) => println("Error! " + e), // onError
+  () => println("Done!")                    // onSuccess
+)```
+prints
+
+```scala
+15
+Done!
+```
+
+</script>
+</section>
+
+
 <section data-markdown> <script type="text/template">
 
-## Marble diagrams explanation using something like drop
+## merge
+
 
 </script> </section>
 
 
 <section data-markdown> <script type="text/template">
 
-## Merge
-
-</script> </section>
-
-
-<section data-markdown> <script type="text/template">
-
-## Zip
+## zip
 
 </script> </section>
 
@@ -480,32 +530,21 @@ They are also composable, as we will see
 
 ## Other functions
 
+ bullet point list?
+
 </script> </section>
 
 <section data-markdown> <script type="text/template">
 
 ## Composition of functions
 
-</script> </section>
-
-<section data-markdown> <script type="text/template">
-
-# When is this useful?
+ex of how we can merge/map/reduce
 
 </script> </section>
 
 <section data-markdown> <script type="text/template">
 
-# In stream-based/event-driven applications
-
-</script> </section>
-
-
-<section data-markdown> <script type="text/template">
-
-## Netflix example
-
-netflix does this with their video API:
+## Real-World Example: Netflix API
 
 ```scala
 def getVideos(userId: Long): Observable[Map[String, Any]] = 
@@ -522,18 +561,41 @@ def getVideos(userId: Long): Observable[Map[String, Any]] =
 //=> Map(id -> 1, rating -> *****, pos -> 1:33, length -> 2h, title -> Gravity)
 ```
 
-That method composes 4 separate asynch calls into a List of 10 Maps
+That method composes 4 separate async calls into a List of 10 Maps
+</script> </section>
+
+
+<section data-markdown> <script type="text/template">
+
+##### &lsquo;Four essential effects in programming&rsquo; <small> - Erik Meijer</small>
+
+```markdown
+                                         One           Many       
+                                    +------------+---------------+
+             Synchronous/Blocking   |     T      |  Iterable[T]  |
+                                    +------------+---------------+
+         Asynchronous/Non-Blocking  | Future[T]  | Observable[T] |
+                                    +------------+---------------+
+```
+
 </script> </section>
 
 <section data-markdown> <script type="text/template">
 
-## Other examples
+## Multiple Implementations of FRP 
+
+- Rx (Reactive Extensions by Microsoft) - Javascript & MS CLR 
+- RxJava (by Netflix) - JVM (Java, Scala, Groovy, Clojure, JRuby) 
+- Elm - Language that compiles to JavaScript
+- BaconJS 
+- Flapjax
 
 </script> </section>
 
+
 <section data-markdown> <script type="text/template">
 
-# Demo (shows merge, zip etc)
+# Demo 
 
 </script> </section>
 
@@ -564,10 +626,11 @@ That method composes 4 separate asynch calls into a List of 10 Maps
 </script> </section>
 
 <section data-markdown> <script type="text/template">
-## Notice anything in common with those technologies?
+#### None of them are in Java
 
-None of them are in Java, reasoning about asynchronous code is easier in more expressive languages
+#### Reasoning about asynchronous code is easier in more expressive languages
 </script> </section>
+
 <section data-markdown> <script type="text/template">
 # Questions?
 </script> </section>
