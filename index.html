@@ -74,6 +74,15 @@ by Ted Naleid <span class="amp">&amp;</span> Joe Muraski
  
 </script> </section>
 
+<section data-markdown> <script type="text/template">
+
+#### but lots of mentions of 
+
+# &lsquo;asynchronous&rsquo; 
+# <span class="amp">&amp;</span>
+# &lsquo;push&rsquo; 
+ 
+</script> </section>
 
 <section data-markdown> <script type="text/template">
 
@@ -313,7 +322,7 @@ getUsers: Future[List[Users]]
 
 <section data-markdown> <script type="text/template">
 
-## Observer example
+### Observer: Draw a Line
 
 ```scala
 var path: Path = null
@@ -331,26 +340,77 @@ control.addMouseUpObserver { event =>
     draw(path)
 }
 ```
+###### <small>from: http://lampwww.epfl.ch/~imaier/pub/DeprecatingObserversTR2010.pdf</small>
 
 </script> </section>
 
 <section data-markdown> <script type="text/template">
 
-### Observers promote side effects
-
+### Multiple Observers needed to make a State Machine
+```scala
+var path: Path = null
+val moveObserver = { (event: MouseEvent) =>  // <- Observer #1
+    path.lineTo(event.position) 
+    draw(path)
+}
+control.addMouseDownObserver { event =>      // <- Observer #2
+    path = new Path(event.position)
+    control.addMouseMoveObserver(moveObserver) 
+}
+control.addMouseUpObserver { event =>        // <- Observer #3
+    control.removeMouseMoveObserver(moveObserver)
+    path.close()
+    draw(path)
+}
+```
 </script> </section>
 
 <section data-markdown> <script type="text/template">
 
-### Multiple Observers needed to make a state machine
+### Observers promote side effects/Global state
 
+```scala
+var path: Path = null                // <- Global State shared by all Observers
+val moveObserver = { (event: MouseEvent) =>
+    path.lineTo(event.position)      // mutate state
+    draw(path)
+}
+control.addMouseDownObserver { event =>
+    path = new Path(event.position)  // mutate state
+    control.addMouseMoveObserver(moveObserver) 
+}
+control.addMouseUpObserver { event => 
+    control.removeMouseMoveObserver(moveObserver)
+    path.close()                     // mutate state
+    draw(path)
+}
+```
 </script> </section>
 
 <section data-markdown> <script type="text/template">
 
-### State needs to be saved in a place available to all Observers
+### Resource Management spread across Observers 
 
+```scala
+var path: Path = null                
+val moveObserver = { (event: MouseEvent) =>
+    path.lineTo(event.position)     
+    draw(path)
+}
+control.addMouseDownObserver { event =>
+    path = new Path(event.position)          // <- Resource Instantiation
+    control.addMouseMoveObserver(moveObserver) 
+}
+control.addMouseUpObserver { event => 
+    control.removeMouseMoveObserver(moveObserver)
+    path.close()                             // <- Resource Cleanup
+    draw(path)
+}
+```
+
+#### Cleanup not guaranteed to be called
 </script> </section>
+
 
 <section data-markdown> <script type="text/template">
 
@@ -399,7 +459,7 @@ control.addMouseUpObserver { event =>
 
 <section data-markdown> <script type="text/template">
 
-### Observables allow you to asynchronously get
+### Observables allow you to asynchronously &lsquo;get&rsquo;
 
 ```scala
 getUsers: Observable[User]
@@ -411,7 +471,7 @@ They are also composable, as we will see
 
 <section data-markdown> <script type="text/template">
 
-#### How is `getUsers` implemented? 
+#### How is &lsquo;getUsers&rsquo; Observer implemented? 
 
 </script> </section>
 
@@ -434,6 +494,34 @@ They are also composable, as we will see
 <script type="text/template">
 
 ## Using Observables 
+
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+
+## subscribe
+
+```scala
+val numbers = Observable(1, 2, 3, 4, 5)
+
+
+numbers.subscribe(
+  (x: Int) => println(x),                   // onNext
+  (e: Throwable) => println("Error! " + e), // onError
+  () => println("Done!")                    // onSuccess
+)
+```
+prints
+```scala
+1
+2
+3
+4
+5
+Done!
+```
 
 </script>
 </section>
@@ -511,11 +599,79 @@ Done!
 </script>
 </section>
 
+<section data-markdown>
+<script type="text/template">
+
+## filter
+
+<img src="/img/filter.png" width="700px"/>
+
+###### <small>from https://github.com/Netflix/RxJava/wiki/Filtering-Observables#filter-or-where</small>
+
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+## filter
+
+```scala
+val moreNumbers = Observable(1, 2, 3, 4, 5, 6, 7, 8, 9)
+
+moreNumbers.filter(x => x % 2 == 0).subscribe(
+  (x: Int) => println(x),                   // onNext
+  (e: Throwable) => println("Error! " + e), // onError
+  () => println("Done!")                    // onSuccess
+)
+```
+prints
+
+```scala
+2
+4
+6
+8
+Done!
+```
+
+</script>
+</section>
+
 
 <section data-markdown> <script type="text/template">
-
 ## merge
 
+<img src="/img/merge.png" width="700px"/>
+
+###### <small>from https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge</small>
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+## merge
+
+```scala
+val odds = Observable(1, 3, 5)
+val evens = Observable(2, 4, 6)
+
+odds.merge(evens).subscribe(
+  (x: Int) => println(x),                   // onNext
+  (e: Throwable) => println("Error! " + e), // onError
+  () => println("Done!")                    // onSuccess
+)
+```
+prints
+
+```scala
+1
+3
+5
+2
+4
+6
+Done!
+```
+(order isn&apos;t normally deterministic) 
 
 </script> </section>
 
@@ -523,6 +679,35 @@ Done!
 <section data-markdown> <script type="text/template">
 
 ## zip
+
+<img src="/img/zip.png" width="700px"/>
+
+###### <small>from https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip</small>
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+## zip
+
+```scala
+val odds = Observable(1, 3, 5)
+val evens = Observable(2, 4, 6)
+
+odds.zip(evens).subscribe(
+  pair => println(s"odd: ${pair._1}, even: ${pair._2}"), // onNext
+  (e: Throwable) => println("Error! " + e),              // onError
+  () => println("Done!")                                 // onSuccess
+)
+```
+prints
+
+```scala
+odd: 1, even: 2
+odd: 3, even: 4
+odd: 5, even: 6
+Done!
+```
+in Scala `zip` emits a tuple by default
 
 </script> </section>
 
