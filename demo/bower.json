@@ -4,7 +4,10 @@
   "dependencies": {
     "sass-bootstrap": "~3.0.0",
     "modernizr": "~2.6.2",
-    "jquery": "~1.10.2"
+    "jquery": "~1.10.2",
+    "bacon": "~0.7.0-rc5",
+    "bacon-ui": "~0.1.1",
+    "socket.io-client": "~0.9.16"
   },
   "devDependencies": {}
 }

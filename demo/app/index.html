@@ -31,12 +31,22 @@
 
             <div class="jumbotron">
                 <h1>Registration Form</h1>
-                <form>
-                  <input type="text" id="username" name="username" placeholder="User Name"/></br>
-                  <input type="text" id="fullname" name="fullname" placeholder="Full Name"/></br>
-                  <a class="btn btn-lg btn-success" href="#" id="BigButton">Register</a>
-                </form>
+              <form id="login-container">
+                <div id="username_div">
+                  <input id="username" type="text" placeholder="username">
+                  <div id="username-unavailable">Username is unavailable</div>
+                </div>
+                <div id="fullname_div">
+                  <input id="fullname" type="text" placeholder="Full Name">
+                </div>
+                <div id="register">
+                  <button id="register_button" onclick="return false;">Register</button>
+                  <span id="result"></span>
+                </div>
+              </form>
             </div>
+
+          <!--<a class="btn btn-lg btn-success" href="#" id="BigButton">Register</a>-->
 
             <div class="footer">
                 <div style="width: 200px; height: 60px">
@@ -58,6 +68,7 @@
         <script src="bower_components/jquery/jquery.js"></script>
         <script src="bower_components/bacon/dist/Bacon.js"></script>
         <script src="bower_components/bacon-ui/Bacon.UI.js"></script>
+        <script src="bower_components/socket.io-client/dist/socket.io.js"></script>
         <!-- endbower -->
         <!-- endbuild -->
 
@@ -91,17 +102,54 @@
         <!-- endbuild -->
 
         <script>
-          username = Bacon.UI.textFieldValue($("#username"))
-          fullname = Bacon.UI.textFieldValue($("#fullname"))
+          username = Bacon.UI.textFieldValue($("#username"));
+          fullname = Bacon.UI.textFieldValue($("#fullname"));
 
-          function nonEmpty(x) {return x.length > 0}
+          function nonEmpty(x) {return x.length > 0};
 
-          usernameEntered = username.map(nonEmpty)
-          fullnameEntered = fullname.map(nonEmpty)
+          usernameEntered = username.map(nonEmpty);
+          fullnameEntered = fullname.map(nonEmpty);
 
-          buttonEnabled = usernameEntered.and(fullnameEntered)
+          availabilityRequest = username.changes().map(function(user) { return { url: "http://localhost:3030/username/" + user }});
+          availabilityResponse = availabilityRequest.ajax();
 
-          buttonEnabled.not().onValue($("#BigButton"), "attr", "disabled")
+          usernameAvailable = availabilityResponse.map(function(value){return value === 'true'})
+
+          setVisibility = function(label, show){
+            if(show){
+              $(label).show();
+            } else {
+              $(label).hide();
+            }
+          }
+
+          usernameAvailable.not().onValue(setVisibility, '#username-unavailable');
+
+          buttonEnabled = usernameEntered.and(fullnameEntered).and(usernameAvailable);
+          buttonEnabled.not().onValue($("#register_button"), "attr", "disabled");
+
+          createSocket = function() {
+            socket = io.connect("http://localhost:3030");
+            socket.on('message', function(data){
+              if(data.message){
+                fromBus.push(data.message);
+              } else {
+                alert('failure');
+              }
+            });
+
+            toBus.onValue(function(val){socket.emit(val.event, {message: val.message})});
+          };
+
+
+
+          myButton = $('#register_button').asEventStream("click");
+          myButton.onValue(createSocket)
+
+          fromBus = new Bacon.Bus();
+          toBus = new Bacon.Bus();
+
+
         </script>
 </body>
 </html>

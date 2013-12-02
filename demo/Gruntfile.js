@@ -14,6 +14,14 @@ module.exports = function (grunt) {
     require('load-grunt-tasks')(grunt);
 
     grunt.initConfig({
+        shell: {
+          launchExpress: {
+            options: {
+              stdout: true
+            }
+          },
+          command: 'node node_modules/nodemon/nodemon.js app'
+        },
         // configurable paths
         yeoman: {
             app: 'app',
