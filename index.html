@@ -70,7 +70,7 @@ by Ted Naleid <span class="amp">&amp;</span> Joe Muraski
 
 <section data-markdown> <script type="text/template">
 
-## and you&apos;ll get a lot of buzzwords and handwaving 
+### and you&apos;ll get a lot of buzzwords and handwaving 
  
 </script> </section>
 
@@ -78,6 +78,15 @@ by Ted Naleid <span class="amp">&amp;</span> Joe Muraski
 <section data-markdown> <script type="text/template">
 
 ## So what is _functional_ reactive programming?
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+### &lsquo;The application of functions<sup>1</sup> in a reactive<sup>2</sup> manner to asynchronous data sequences&rsquo; <small>- RxJava Wiki</small> 
+
+##### [1] lambdas <span class="amp">&amp;</span> closures
+##### [2] asynchronous <span class="amp">&amp;</span> push
 
 </script> </section>
 
@@ -398,7 +407,7 @@ control.addMouseUpObserver { event =>
 <section data-markdown>
 <script type="text/template">
 
-### Observables allow you to get asynchronously 
+### Observables allow you to asynchronously get
 
 ```scala
 getUsers: Observable[User]
@@ -414,13 +423,35 @@ They are also composable, as we will see
 
 ##### &lsquo;Four essential effects in programming&rsquo; <small> - Erik Meijer</small>
 
-                                           One           Many       
-                                      +------------+---------------+
-               Synchronous/Blocking   |     T      |  Iterable[T]  |
-                                      +------------+---------------+
-           Asynchronous/Non-Blocking  | Future[T]  | Observable[T] |
-                                      +------------+---------------+
+```markdown
+                                         One           Many       
+                                    +------------+---------------+
+             Synchronous/Blocking   |     T      |  Iterable[T]  |
+                                    +------------+---------------+
+         Asynchronous/Non-Blocking  | Future[T]  | Observable[T] |
+                                    +------------+---------------+
+```
 
+
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+
+#### Iterator : pull :: Observable : push
+
+```markdown
+                                Iterator (pull)     Observable (push)
+                             +-------------------+--------------------+
+              retrieve data  | T next()          | onNext(T)          |
+                             +-------------------+--------------------+
+               error occurs  | throws Exception  | onError(Exception) |
+                             +-------------------+--------------------+
+          end of collection  | return            | onCompleted()      |
+                             +-------------------+--------------------+
+```
+##### <small>(JavaRx implementation)</small>
 
 </script>
 </section>
