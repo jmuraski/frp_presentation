@@ -91,9 +91,11 @@ by Ted Naleid <span class="amp">&amp;</span> Joe Muraski
 
 ## We had single values
   
-    getUser: User
+```scala
+getUser: User
+```
 
-###### Synchronous/Blocking/Pull
+###### Synchronous + Blocking
 
 </script> </section>
 
@@ -108,9 +110,11 @@ by Ted Naleid <span class="amp">&amp;</span> Joe Muraski
 
 ### Next we got many values in one call 
 
-    getUsers: List[User]
+```scala
+getUsers: List[User]
+```
 
-###### Synchronous/Blocking/Pull
+###### Synchronous + Blocking
 
 </script> </section>
 
@@ -118,20 +122,19 @@ by Ted Naleid <span class="amp">&amp;</span> Joe Muraski
 
 ### To work with many values we use Iterators  
 
-    hasNext: Boolean
-    next: User
-
-(as documented by the Gang of Four)
-
+```scala
+hasNext: Boolean
+next: User
+```
 </script> </section>
-
 
 <section data-markdown> <script type="text/template">
 
 ### Iterators lead to composable data manipulation
 
-    val adults = users.filter(_.age > 17).sortBy(p => (p.lName, p.fName)).take(10)
-
+```scala
+val adults = users.filter(_.age > 17).sortBy(p => (p.lName, p.fName)).take(10)
+```
 </script> </section>
 
 <section data-markdown> <script type="text/template">
@@ -163,7 +166,6 @@ by Ted Naleid <span class="amp">&amp;</span> Joe Muraski
 <small>source: http://norvig.com/21-days.html#answers</small>
 ### Blocking Requests
 
-
 </script>
 </section>
 
@@ -190,7 +192,6 @@ by Ted Naleid <span class="amp">&amp;</span> Joe Muraski
 <small>source: https://class.coursera.org/reactive-001/lecture/51</small>
 ### Blocking Requests
 
-
 </script>
 </section>
 
@@ -199,72 +200,83 @@ by Ted Naleid <span class="amp">&amp;</span> Joe Muraski
 
 ## Callbacks/CPS let us work asynchronously
 
-CPS - Continuation Passing Style
-
-Call Back Hell
-
-show easy then painful examples
-
-</script> </section>
-
-<section data-markdown> <script type="text/template">
-
-## Futures/Promises help tame callback hell
-
-(for single values)
-
-</script> </section>
-
-<section data-markdown> <script type="text/template">
-
-## get single value (async)
-
-    getWidget: Future[Widget]
-
-</script> </section>
-
-
-<section data-markdown> <script type="text/template">
-# What if you need a list of items asynchronously? 
-
-One way is to request the full list in an asynchronous way:
-
-    getWidgets: Future[Widget]
-
-Server calculates list asynchronously and does a callback when it has the full list
-
-Problems: 
-- need to wait for full list to come back (slow user experience)
-- what if it's infinite (need to paginate, etc)
-- what if it's a stream that updates? we need to poll for updates
-
-</script> </section>
-
-<section data-markdown> <script type="text/template">
-# Observer pattern (as documented by the Gang of Four)
-
-lets you register a callback 
-
-but then it is up to you to aggregate those into mutable lists and let consumers know that the list has been updated
-
 </script> </section>
 
 <section data-markdown>
 <script type="text/template">
 
-Observer pattern
+## And lead to Callback Hell
 
-    var path: Path = null
-    val moveObserver = { (event: MouseEvent) =>
-        path.lineTo(event.position) draw(path)
-    }
-    control.addMouseDownObserver { event =>
-        path = new Path(event.position)
-        control.addMouseMoveObserver(moveObserver) 
-    }
-    control.addMouseUpObserver { event => control.removeMouseMoveObserver(moveObserver) path.close()
-        draw(path)
-    }
+```javascript
+getTweetsWithUrlsFor("tednaleid", function(err, tweets) {
+  if (err) console.log("Error getting tweets for: " + err);
+  else {
+    var mostRecentShortUrl = parseTweetsForUrls(tweets[0]);
+    httpGet(mostRecentShortUrl, function(err, responseBody) {
+      if (err) console.log("Error retrieving tweet");
+      else {
+        var targetUrl = extractUrlFromTweet(responseBody);
+        httpGet(targetUrl, function(err, responseBody) {
+          if (err) console.log("Error retrieving tweet");
+          else console.log("most recent linked text: " + responseBody);
+        });
+      }
+    });
+  }
+});
+```
+
+</script>
+</section>
+
+<section data-markdown> <script type="text/template">
+
+### Futures/Promises can help
+
+```javascript
+getTweetsWithUrlsFor("tednaleid").then(function(tweets) {
+  var mostRecentShortUrl = parseTweetsForUrls(tweets[0]);
+  return httpGet(mostRecentShortUrl);
+}).then(function(responseBody) {
+  var targetUrl = extractUrlFromTweet(responseBody);
+  return httpGet(targetUrl);
+}).then(
+  function(responseBody) {
+    console.log("most recent linked text: " + responseBody);
+  },
+  function(error) {
+    console.error("Problem getting most recent text: " + error);
+  }
+);
+```
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+## Get single Future value 
+
+```scala
+getUser: Future[User]
+```
+
+###### Asynchronous + Non-Blocking
+
+</script> </section>
+
+
+<section data-markdown> <script type="text/template">
+
+## What if you need a list of items asynchronously? 
+
+</script> </section>
+
+<section data-markdown>
+<script type="text/template">
+### One way: Future containing an Iterator
+
+```scala
+getUsers: Future[List[Users]]
+```
 
 </script>
 </section>
@@ -272,53 +284,143 @@ Observer pattern
 <section data-markdown>
 <script type="text/template">
 
-lots of problems with this
+### Issue: Need to wait for full list 
 
-observers promote side effects 
-
-need multiple observers to make a state machine
-
-state needs to be saved in a place available to all
-
+### Result: Slow user experience
 
 </script>
 </section>
 
+<section data-markdown>
+<script type="text/template">
+
+### Issue: What if full list is too big? 
+
+### Result: Need to paginate
+
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+### Issue: What if it&apos;s a stream that has updates?
+
+### Result: We need to poll for updates and merge them in
+
+</script>
+</section>
+
+
+<section data-markdown> <script type="text/template">
+### Another way: Observer pattern
+
+</script> </section>
+
+<section data-markdown>
+<script type="text/template">
+
+## Observer example
+
+```scala
+var path: Path = null
+val moveObserver = { (event: MouseEvent) =>
+    path.lineTo(event.position) 
+    draw(path)
+}
+control.addMouseDownObserver { event =>
+    path = new Path(event.position)
+    control.addMouseMoveObserver(moveObserver) 
+}
+control.addMouseUpObserver { event => 
+    control.removeMouseMoveObserver(moveObserver)
+    path.close()
+    draw(path)
+}
+```
+
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+
+### Observers promote side effects
+
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+
+### Multiple Observers needed to make a state machine
+
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+
+### State needs to be saved in a place available to all Observers
+
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+
+## Is there a better way? 
+
+</script>
+</section>
+
+
 <section data-markdown> <script type="text/template">
 
-# what if this happened? 
+## What if this happened? 
 
-You got your Iterator in my Observable! You got your Observable in my Iterator!
+<img title="You got your Iterator in my Observer!" src="/img/chocolate_in_my_peanut_butter.jpg" width="700px"/>
 
-Photoshopped Reeses Peanut Butter Cups image
+#### <small>You got your Iterator in my Observer!</small>
+
 
 </script> </section>
 
 <section data-markdown> <script type="text/template">
 
-# their love child would be the Observable
+### The result would be the Observable
 
-    getWidgets: Observable[Widget]
+<img title="Mmmm....delicious!" src="/img/peanut_butter_cups.jpg" width="700px"/>
 
-Allows you to asynchronously get 
+#### <small>Two great tastes that taste great together!</small>
+
+</script> </section>
+
+<section data-markdown>
+<script type="text/template">
+
+### Observables allow you to get asynchronously 
+
+```scala
+getUsers: Observable[User]
+```
 
 They are also composable, as we will see
 
-</script> </section>
+</script>
+</section>
 
 <section data-markdown>
 <script type="text/template">
 
-#### 4 essential Effects in Programming
+##### &lsquo;Four essential effects in programming&rsquo; <small> - Erik Meijer</small>
 
-                                         One           Many       
-                                    +------------+---------------+
-             Synchronous/Blocking   | T/Try[T]   |  Iterable[T]  |
-                                    +------------+---------------+
-         Asynchronous/Non-Blocking  | Future[T]  | Observable[T] |
-                                    +------------+---------------+
+                                           One           Many       
+                                      +------------+---------------+
+               Synchronous/Blocking   |     T      |  Iterable[T]  |
+                                      +------------+---------------+
+           Asynchronous/Non-Blocking  | Future[T]  | Observable[T] |
+                                      +------------+---------------+
 
-per Erik Meijer
 
 </script>
 </section>
