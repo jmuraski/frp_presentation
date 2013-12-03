@@ -713,9 +713,8 @@ in Scala `zip` emits a tuple by default
 
 <section data-markdown> <script type="text/template">
 
-## Other functions
+### All functions return new Observables and are free from side-effects
 
- bullet point list?
 
 </script> </section>
 
@@ -723,7 +722,24 @@ in Scala `zip` emits a tuple by default
 
 ## Composition of functions
 
-ex of how we can merge/map/reduce
+```scala
+val numbers = Observable(1, 2, 3, 4, 5)
+
+numbers.take(3).flatMap(x => Observable(x, x * 2)).subscribe(println(_))
+```
+
+prints
+
+```scala
+1
+2
+2
+4
+3
+6
+```
+
+###### (flatMap! `Observable` is a monad)
 
 </script> </section>
 
