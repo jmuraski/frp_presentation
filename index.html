@@ -471,7 +471,7 @@ They are also composable, as we will see
 
 <section data-markdown> <script type="text/template">
 
-#### How is &lsquo;getUsers&rsquo; Observer implemented? 
+#### How is the Observer returned by &lsquo;getUsers&rsquo; implemented? 
 
 </script> </section>
 
@@ -783,15 +783,95 @@ That method composes 4 separate async calls into a List of 10 Maps
 
 <section data-markdown> <script type="text/template">
 
-## Multiple Implementations of FRP 
-
-- Rx (Reactive Extensions by Microsoft) - Javascript & MS CLR 
-- RxJava (by Netflix) - JVM (Java, Scala, Groovy, Clojure, JRuby) 
-- Elm - Language that compiles to JavaScript
-- BaconJS 
-- Flapjax
+### FRP is a great fit for:
 
 </script> </section>
+
+
+<section data-markdown> <script type="text/template">
+
+#### Handling UI Events like mouse actions or keyboard input
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+#### Reacting to streams of information
+
+#### ex: Integration events from a message bus or listening on a WebSocket
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+### FRP can work well for asynchronous tasks
+#### (especially those that aggregate data)
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+### If you&apos;re using FRP in place of a regular Iterator
+### You&apos;re doing it wrong 
+
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+### Implementations of Functional Reactive Programming 
+
+</script> </section>
+
+<section data-markdown>
+<script type="text/template">
+
+<img src="/img/rx.png" width="200px"/>
+### Rx - Microsoft
+#### CLR <span class="amp">&amp;</span> JavaScript 
+
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+
+<img src="/img/rx.png" width="200px"/>
+### RxJava - Netflix
+##### Java, Scala, Groovy, Clojure, Kotlin, JRuby
+
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+
+<img src="/img/elm.png" width="200px"/>
+### Elm 
+#### Language that compiles to JavaScript
+
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+
+<img src="/img/flapjax.png" width="500px"/>
+#### Another language that compiles to JavaScript
+
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+
+<img src="/img/baconjs.png" width="400px"/>
+### JavaScript Library
+
+</script>
+</section>
+
+
+
 
 
 <section data-markdown> <script type="text/template">
