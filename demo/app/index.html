@@ -32,16 +32,29 @@
             <div class="jumbotron">
                 <h1>Registration Form</h1>
               <form id="login-container">
-                <div id="username_div">
-                  <input id="username" type="text" placeholder="username">
-                  <div id="username-unavailable">Username is unavailable</div>
+                <div id="username_div" class="row">
+                  <div class="col-md-4 col-md-offset-4"><input id="username" type="text" placeholder="username"></div>
+                  <div id="username-unavailable" class="col-md-4">Unavailable</div>
                 </div>
-                <div id="fullname_div">
-                  <input id="fullname" type="text" placeholder="Full Name">
+                <div id="fullname_div" class="row">
+                  <div class="col-md-4 col-md-offset-4"><input id="fullname" type="text" placeholder="Full Name"></div>
                 </div>
-                <div id="register">
-                  <button id="register_button" onclick="return false;">Register</button>
+                <div class="row">&nbsp;</div>
+                <div id="register" class="row">
+                  <button id="register_button" class="btn btn-primary" onclick="return false;">Register</button>
                   <span id="result"></span>
+                </div>
+                <div class="row">
+                  <div class="col-md-2 col-md-offset-3">
+                    <button id="plus_button" class="btn btn-info" onclick="return false;">+</button>
+                  </div>
+                  <div class="col-md-2" id="seconds">10</div>
+                  <div class="col-md-2">
+                    <button id="minus_button" class="btn btn-info" onclick="return false;">-</button>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4 col col-md-offset-4" id="server_time">Server Time</div>
                 </div>
               </form>
             </div>
@@ -102,6 +115,25 @@
         <!-- endbuild -->
 
         <script>
+
+//  Create an event stream for the click of buttons
+//  Use Map to map plus to a value of 1 and minus to -1
+          plus = $('#plus_button').asEventStream('click').map(1)
+          minus = $('#minus_button').asEventStream('click').map(-1)
+
+//  This merges the two streams into one stream
+          both = plus.merge(minus)
+
+//  Scan call the provided function on values in the stream
+//  x is the seed value and is carried through
+//  y is the value passed in by the stream
+          counter = both.scan(10, function(x,y){return x + y;})
+
+// when the counter gets a value the function is called with the value
+// in this case the value is set as text in the UI
+          counter.onValue(function(sum){$('#seconds').text(sum)})
+
+
           username = Bacon.UI.textFieldValue($("#username"));
           fullname = Bacon.UI.textFieldValue($("#fullname"));
 
@@ -139,16 +171,17 @@
             });
 
             toBus.onValue(function(val){socket.emit(val.event, {message: val.message})});
+            counter.onValue(function(sum){socket.emit('send', {message: sum})});
           };
 
+          fromBus = new Bacon.Bus();
+          toBus = new Bacon.Bus();
 
 
           myButton = $('#register_button').asEventStream("click");
           myButton.onValue(createSocket)
 
-          fromBus = new Bacon.Bus();
-          toBus = new Bacon.Bus();
-
+          fromBus.onValue(function(val){$('#server_time').text(val)});
 
         </script>
 </body>

@@ -22,11 +22,14 @@ var io = require('socket.io').listen(app.listen(port));
 io.sockets.on('connection', function(socket){
   socket.emit('message', { message: 'welcome to FRP Demo' });
   socket.on('send', function(data) {
-    data.message = data.message + 'foo';
-    io.sockets.emit('message', data);
+    clearInterval(interval);
+    console.log(data.message);
+    console.log (data.message * 1000);
+    newInterval = data.message * 1000
+    interval = setInterval(tick, newInterval);
   });
 });
 
-setInterval(tick, 10000);
+var interval = setInterval(tick, 10000);
 
 console.log('Listening on port ' + port);
