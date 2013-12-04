@@ -2,6 +2,8 @@
 
 Created with [reveal.js](http://lab.hakim.se/reveal-js/).
 
+Presentation available on [the GitHub Pages branch for this repo](http://tednaleid.github.io/frp_presentation)
+
 ## Installation/Running Locally
 
 You need to have `grunt-cli`, and `npm` installed first.
