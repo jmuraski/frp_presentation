@@ -34,7 +34,7 @@
               <form id="login-container">
                 <div id="username_div" class="row">
                   <div class="col-md-4 col-md-offset-4"><input id="username" type="text" placeholder="username"></div>
-                  <div id="username-unavailable" class="col-md-4">Unavailable</div>
+                  <div id="username-unavailable" class="col-md-4" style="display: none">Unavailable</div>
                 </div>
                 <div id="fullname_div" class="row">
                   <div class="col-md-4 col-md-offset-4"><input id="fullname" type="text" placeholder="Full Name"></div>
@@ -115,6 +115,8 @@
         <!-- endbuild -->
 
         <script>
+//todo swap out Bacon UI to bacon jquery
+
 
 //  Create an event stream for the click of buttons
 //  Use Map to map plus to a value of 1 and minus to -1
@@ -134,54 +136,80 @@
           counter.onValue(function(sum){$('#seconds').text(sum)})
 
 
+//  Uses Bacon UI to take the Key Up event stream for the field and creates a property for
+//  for the value of the field
+//  username and fullname input fields are mapped to these objects
           username = Bacon.UI.textFieldValue($("#username"));
           fullname = Bacon.UI.textFieldValue($("#fullname"));
 
+//  A function to determine if a value is greater the zero
           function nonEmpty(x) {return x.length > 0};
 
+//  maps the properties to a boolean using the function above
           usernameEntered = username.map(nonEmpty);
           fullnameEntered = fullname.map(nonEmpty);
 
-          availabilityRequest = username.changes().map(function(user) { return { url: "http://localhost:3030/username/" + user }});
-          availabilityResponse = availabilityRequest.ajax();
+//  Sets the value of buttonEnabled creates a boolean of these values conjoined
+          buttonEnabled = usernameEntered.and(fullnameEntered) //.and(usernameAvailable);
 
-          usernameAvailable = availabilityResponse.map(function(value){return value === 'true'})
-
-          setVisibility = function(label, show){
-            if(show){
-              $(label).show();
-            } else {
-              $(label).hide();
-            }
-          }
-
-          usernameAvailable.not().onValue(setVisibility, '#username-unavailable');
-
-          buttonEnabled = usernameEntered.and(fullnameEntered).and(usernameAvailable);
+//  Takes the opposite value of buttonEnabled and on a value change calls attr function on
+//  register_button with a value of disabled
           buttonEnabled.not().onValue($("#register_button"), "attr", "disabled");
 
+//  When the username changes the map is set to availabilityRequest for the params for an ajax call
+          availabilityRequest = username.changes().map(function(user) { return { url: "http://localhost:3030/username/" + user }});
+
+//  With Helper method the eventstream data is used as parameters to the Jquery AJAX calls using the
+//  From Promise Method on Bacon
+          availabilityResponse = availabilityRequest.ajax();
+
+//  Maps the boolean response from the ajax call to usernameAvailable
+          usernameAvailable = availabilityResponse.map(function(value){return value === 'true'})
+
+
+
+//  creates a filtered stream one for true values one for false values
+//  then on a value change call hide or show on block
+          usernameAvailable.filter(function(val){return val}).onValue($('#username-unavailable'), 'hide');
+          usernameAvailable.filter(function(val){return !val}).onValue($('#username-unavailable'), 'show');
+
+//  Creates Message Buses to publish to, buses are event streams
+          receiveBus = new Bacon.Bus();
+          sendBus = new Bacon.Bus();
+
+//  Code used to create a socket for sending and receiving messages on
+//  the socket
           createSocket = function() {
+            alert('called');
             socket = io.connect("http://localhost:3030");
             socket.on('message', function(data){
               if(data.message){
-                fromBus.push(data.message);
+
+//  As messages are received on the socket they are pushed on the bus so they can
+//  consumed as an event stream
+                receiveBus.push(data.message);
               } else {
                 alert('failure');
               }
             });
 
-            toBus.onValue(function(val){socket.emit(val.event, {message: val.message})});
+//  when a value is received on this bus call the function to send an event to
+//  to the server
+            sendBus.onValue(function(val){socket.emit(val.event, {message: val.message})});
+
+//  when the counter has new values send a send event to the server with the value
             counter.onValue(function(sum){socket.emit('send', {message: sum})});
           };
 
-          fromBus = new Bacon.Bus();
-          toBus = new Bacon.Bus();
 
-
+//  get and event stream for the register button being clicked
           myButton = $('#register_button').asEventStream("click");
-          myButton.onValue(createSocket)
 
-          fromBus.onValue(function(val){$('#server_time').text(val)});
+// sets it so only the first event is taken then the eventstream is ignored
+          myButton.take(1).onValue(createSocket);
+
+//  takes values from the bus and applies the value to the server time display
+          receiveBus.onValue(function(val){$('#server_time').text(val)});
 
         </script>
 </body>

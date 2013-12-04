@@ -20,7 +20,7 @@ function tick() {
 
 var io = require('socket.io').listen(app.listen(port));
 io.sockets.on('connection', function(socket){
-  socket.emit('message', { message: 'welcome to FRP Demo' });
+  socket.emit('message', { message: 'Connected to the Web Socket' });
   socket.on('send', function(data) {
     clearInterval(interval);
     console.log(data.message);
