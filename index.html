@@ -322,7 +322,7 @@ getUsers: Future[List[Users]]
 
 <section data-markdown> <script type="text/template">
 
-### Observer: Draw a Line
+#### Observer - Swing Event handling
 
 ```scala
 var path: Path = null
@@ -749,20 +749,25 @@ prints
 
 ```scala
 def getVideos(userId: Long): Observable[Map[String, Any]] = 
-  videoService.getVideos(userId)
-    .take(10)  // take the first 10, then auto-unsubscribe
+  videoService.getVideos(userId)                             // async Observable
+     // take the first 10, then auto-unsubscribe
+    .take(10)  
     .flatMap(video => {
-      val metadata = video.getMetaData(video) // async Map
+      val metadata = video.getMetaData(video)                // async Map
       val bookmark = videoService.getBookmark(video, userId) // async Map
-      val rating = videoService.getRating(video, userId) // async Map
+      val rating = videoService.getRating(video, userId)     // async Map
+      // zip the data from those 3 services into an Observable
       Observable.zip(Observable(List(metadata, bookmark, rating): _*)).map {
         case m :: b :: r :: Nil => Map("id" -> video.id) ++ m ++ b ++ r
       }
   })
-//=> Map(id -> 1, rating -> *****, pos -> 1:33, length -> 2h, title -> Gravity)
 ```
 
 That method composes 4 separate async calls into a List of 10 Maps
+```scala
+Map(id -> 1, rating -> *****, pos -> 1:33, length -> 2h, title -> Gravity)
+…
+```
 </script> </section>
 
 
@@ -870,16 +875,6 @@ That method composes 4 separate async calls into a List of 10 Maps
 </script>
 </section>
 
-
-
-
-
-<section data-markdown> <script type="text/template">
-
-# Demo 
-
-</script> </section>
-
 <section data-markdown> <script type="text/template">
 
 ## Other similar tech that addresses the problems
@@ -910,6 +905,12 @@ That method composes 4 separate async calls into a List of 10 Maps
 #### None of them are in Java
 
 #### Reasoning about asynchronous code is easier in more expressive languages
+</script> </section>
+
+<section data-markdown> <script type="text/template">
+
+# Demo 
+
 </script> </section>
 
 <section data-markdown> <script type="text/template">
