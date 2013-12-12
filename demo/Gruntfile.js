@@ -15,12 +15,12 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
         shell: {
-          launchExpress: {
-            options: {
-              stdout: true
-            }
-          },
-          command: 'node node_modules/nodemon/nodemon.js app'
+            launchExpress: {
+                options: {
+                    stdout: true
+                }
+            },
+            command: 'node node_modules/nodemon/nodemon.js app'
         },
         // configurable paths
         yeoman: {
@@ -320,8 +320,8 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask('server', function () {
-      grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
-      grunt.task.run(['serve']);
+        grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
+        grunt.task.run(['serve']);
     });
 
     grunt.registerTask('test', [
